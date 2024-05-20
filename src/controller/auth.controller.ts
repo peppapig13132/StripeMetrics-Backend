@@ -38,7 +38,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
       const token = jwt.sign(
         {
-          id: user.dataValues.user_id,
+          id: user.dataValues.id,
           email: user.dataValues.email,
         },
         `${secret}`,
@@ -48,23 +48,23 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       );
 
       res.json({
-        "ok": true,
-        "user": {
-          "id": user.dataValues.user_id,
-          "email": user.dataValues.email
+        ok: true,
+        user: {
+          id: user.dataValues.id,
+          email: user.dataValues.email,
         },
-        "token": token
+        token: token
       });
     } else {
       res.json({
-        "ok": false,
-        "msg": "incorrect password"
+        ok: false,
+        msg: "incorrect password",
       });
     }
   } else {
     res.json({
-      "ok": false,
-      "msg": "unauthorized user"
+      ok: false,
+      msg: "unauthorized user",
     });
   }
 })
