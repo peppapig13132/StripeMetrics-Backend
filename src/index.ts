@@ -1,6 +1,7 @@
 import express, {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import router from "./routes";
 
 dotenv.config();
 
@@ -11,12 +12,7 @@ const port = process.env.APP_PORT || 8000;
 app.use(cors());
 app.use(express.json());
 
-app.get('/api', (req: Request, res: Response) => {
-  res.send('Express.js server is running!');
-});
-app.use("*", function (req: Request, res: Response) {
-  res.status(404).send('404 | Bad request!');
-});
+router(app);
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
