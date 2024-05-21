@@ -8,8 +8,8 @@ export default (app: any) => {
     res.send("Express.js server is running!");
   });
 
-  app.use("/auth", authRouter);
-  app.use("/stripe", authenticate, stripeRouter);
+  app.use("/api/auth", authRouter);
+  app.use("/api/stripe", authenticate, stripeRouter);
 
   app.use("*", function (req: Request, res: Response) {
     res.status(404).send("404 | Bad request!");

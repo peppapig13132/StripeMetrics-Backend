@@ -4,7 +4,7 @@ import { checkDuplicatedEmail } from "../middleware/auth.middleware";
 
 const router = Router();
 
-router.post("/singup", checkDuplicatedEmail, signup);
+router.post("/signup", checkDuplicatedEmail, signup);
 router.post("/login", login);
 
 export default router;

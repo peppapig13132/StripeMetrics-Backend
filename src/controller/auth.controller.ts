@@ -18,7 +18,10 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
     password: passwordHash
   });
 
-  res.send(user);
+  res.json({
+    ok: true,
+    user: user
+  });
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
