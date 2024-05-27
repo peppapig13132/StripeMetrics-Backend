@@ -3,11 +3,26 @@ import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import Stripe from "stripe";
 import { AuthRequest } from "../types/auto-request";
+import DailySum from "../model/dailysum.model";
 
 dotenv.config();
 
 const stripeSecretKey = process.env.STRIPE_SECRETKEY || "";
 const stripe = new Stripe(stripeSecretKey);
+
+export const getMrrMovementsData = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const last30DailySums = await DailySum.findAll({
+    order: [
+      ['createdAt', 'DESC']
+    ],
+    limit: 30
+  });
+
+  res.json({
+    ok: true,
+    mrr_movements_data: last30DailySums,
+  });
+});
 
 export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequest, res: Response) => {
   if(stripeSecretKey == "") {
