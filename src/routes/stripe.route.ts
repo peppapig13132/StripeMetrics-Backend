@@ -5,6 +5,6 @@ import {
 
 const router = Router();
 
-router.post("/count-new-subscriptions-2", getNewSubscriptionWithDateRange);
+router.post("/count-new-subscriptions", getNewSubscriptionWithDateRange);
 
 export default router;

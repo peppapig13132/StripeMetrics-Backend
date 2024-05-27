@@ -11,7 +11,10 @@ const stripe = new Stripe(stripeSecretKey);
 
 export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequest, res: Response) => {
   if(stripeSecretKey == "") {
-    res.send("stripe key is required");
+    res.json({
+      ok: false,
+      msg: "stripe key is required",
+    });
   }
 
   const dateStart = req.body.date_start;
