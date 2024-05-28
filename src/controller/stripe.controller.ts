@@ -108,10 +108,8 @@ export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequ
 
   res.json({
     ok: true,
-    data: {
-      count_last_30days: countOfLast30Days,
-      count_last_month: countOfLastMonth,
-    }
+    count_last_30days: countOfLast30Days,
+    count_last_month: countOfLastMonth,
   });
 });
 
