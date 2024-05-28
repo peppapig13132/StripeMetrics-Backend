@@ -80,32 +80,37 @@ export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequ
     });
   }
 
-  const dateStart = req.body.date_start;
-  const dateEnd = (req.body.date_start < req.body.date_end) ? req.body.date_end : (req.body.date_start + 1);
-  
-  const subscriptions1 = await stripe.subscriptions.list({
+  // Last 30 days
+  const now = moment().unix();
+  const thirtyDaysAgo = getDate30DaysBefore(now);
+
+  const subscriptionsOfLast30Days = await stripe.subscriptions.list({
     created: {
-      gte: dateStart - (dateEnd - dateStart),
-      lt: dateStart,
+      gte: thirtyDaysAgo,
+      lte: now,
     },
   });
 
-  const count1 = subscriptions1.data.length;
+  const countOfLast30Days = subscriptionsOfLast30Days.data.length;
 
-  const subscriptions2 = await stripe.subscriptions.list({
+  // Last month
+  const firstDayOfLastMonth = getFirstDayOfLastMonth(now);
+  const firstDayOfThisMonth = getFirstDayOfTheMonth(now);
+
+  const subscriptionsOfLastMonth = await stripe.subscriptions.list({
     created: {
-      gte: dateStart,
-      lt: dateEnd,
+      gte: firstDayOfLastMonth,
+      lte: firstDayOfThisMonth,
     },
   });
 
-  const count2 = subscriptions2.data.length;
+  const countOfLastMonth = subscriptionsOfLastMonth.data.length;
 
   res.json({
     ok: true,
     data: {
-      count1: count1,
-      count2: count2,
+      count_last_30days: countOfLast30Days,
+      count_last_month: countOfLastMonth,
     }
   });
 });
