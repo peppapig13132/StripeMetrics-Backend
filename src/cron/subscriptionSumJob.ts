@@ -45,6 +45,6 @@ cron.schedule(cronExpression, async () => {
 
     console.log(`Total sum of active subscriptions for ${now.format('YYYY-MM-DD')}: $${totalSum}`);
   } catch (error) {
-    console.error('Error fetching subscriptions:', error);
+    console.error('Error cronJob/subscriptionSumJob:', error);
   }
 });
