@@ -2,7 +2,7 @@ import cron from 'node-cron';
 import Stripe from 'stripe';
 import moment from 'moment-timezone';
 import { config } from 'dotenv';
-import DailySum from '../model/dailysum.model';
+import DailySum from '../model/dailySum.model';
 
 config();
 

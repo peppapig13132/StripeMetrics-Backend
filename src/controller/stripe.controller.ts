@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import Stripe from "stripe";
 import moment from 'moment';
 import { AuthRequest } from "../types/auto-request";
-import DailySum from "../model/dailysum.model";
+import DailySum from "../model/dailySum.model";
 import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth } from "../utils/utils";
 
 dotenv.config();
