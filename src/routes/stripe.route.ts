@@ -5,6 +5,7 @@ import {
   getMrrMovementsData,
   getAverageStaying,
   getFreeToPaidSubscriptions,
+  getFreeTrials,
 } from '../controller/stripe.controller';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.post('/count-new-subscriptions', getNewSubscriptionWithDateRange);
 router.post('/mrr-movements', getMrrMovementsData);
 router.post('/average-staying', getAverageStaying);
 router.post('/free-to-paid-subscriptions', getFreeToPaidSubscriptions);
+router.post('/free-trials', getFreeTrials);
 
 export default router;
