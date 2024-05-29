@@ -163,4 +163,57 @@ export const getAverageStaying = asyncHandler(async (req: AuthRequest, res: Resp
     average_staying_last_30_days: averageStayingLast30Days,
     average_staying_last_month: averageStayingLastMonth,
   })
-})
+});
+
+export const getFreeToPaidSubscriptions = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const today = moment();
+
+  // Last 30 days
+  const subscriptionsLast30Days = await stripe.subscriptions.list({
+    created: {
+      gte: today.clone().subtract(30, 'days').unix(),
+    },
+  });
+
+  const freeToPaidSubscriptionsLast30Days = subscriptionsLast30Days.data.filter((subscription) => {
+    if (subscription.status !== 'active') {
+      return false;
+    }
+
+    return subscription.items.data.some((item) => {
+      return item.price.recurring?.interval !== undefined;
+    });
+  });
+
+  const countFreeToPaidSubscriptionsLast30Days = freeToPaidSubscriptionsLast30Days.length;
+  const countAllSubscriptionsLast30Days = subscriptionsLast30Days.data.length;
+
+    // Last Month
+    const subscriptionsLastMonth = await stripe.subscriptions.list({
+      created: {
+        gte: today.clone().subtract(1, 'months').startOf('month').unix(),
+        lte: today.clone().startOf('month').unix(),
+      },
+    });
+  
+    const freeToPaidSubscriptionsLastMonth = subscriptionsLastMonth.data.filter((subscription) => {
+      if (subscription.status !== 'active') {
+        return false;
+      }
+  
+      return subscription.items.data.some((item) => {
+        return item.price.recurring?.interval !== undefined;
+      });
+    });
+  
+    const countFreeToPaidSubscriptionsLastMonth = freeToPaidSubscriptionsLastMonth.length;
+    const countAllSubscriptionsLastMonth = subscriptionsLastMonth.data.length;
+
+  res.json({
+    ok: true,
+    count_free_to_paid_last_30_days: countFreeToPaidSubscriptionsLast30Days,
+    count_all_last_30_days: countAllSubscriptionsLast30Days,
+    count_free_to_paid_last_month: countFreeToPaidSubscriptionsLastMonth,
+    count_all_last_month: countAllSubscriptionsLastMonth,
+  });
+});
