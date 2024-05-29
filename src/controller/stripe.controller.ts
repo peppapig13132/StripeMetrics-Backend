@@ -1,22 +1,24 @@
-import { Response } from "express";
-import asyncHandler from "express-async-handler";
-import dotenv from "dotenv";
-import Stripe from "stripe";
+import { Response } from 'express';
+import asyncHandler from 'express-async-handler';
+import dotenv from 'dotenv';
+import Stripe from 'stripe';
 import moment from 'moment';
-import { AuthRequest } from "../types/auto-request";
-import DailySum from "../model/dailySum.model";
-import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth } from "../utils/utils";
+import { Op } from 'sequelize';
+import { AuthRequest } from '../types/auto-request';
+import DailySum from '../model/dailySum.model';
+import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth } from '../utils/utils';
+import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
 
 dotenv.config();
 
-const stripeSecretKey = process.env.STRIPE_SECRETKEY || "";
+const stripeSecretKey = process.env.STRIPE_SECRETKEY || '';
 const stripe = new Stripe(stripeSecretKey);
 
 export const getMrrData = asyncHandler(async (req: AuthRequest, res: Response) => {
-  if(stripeSecretKey == "") {
+  if(stripeSecretKey == '') {
     res.json({
       ok: false,
-      msg: "stripe key is required",
+      msg: 'stripe key is required',
     });
   }
 
@@ -73,10 +75,10 @@ export const getMrrData = asyncHandler(async (req: AuthRequest, res: Response) =
 })
 
 export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequest, res: Response) => {
-  if(stripeSecretKey == "") {
+  if(stripeSecretKey == '') {
     res.json({
       ok: false,
-      msg: "stripe key is required",
+      msg: 'stripe key is required',
     });
   }
 
@@ -118,7 +120,7 @@ export const getMrrMovementsData = asyncHandler(async (req: AuthRequest, res: Re
     order: [
       ['createdAt', 'DESC']
     ],
-    limit: 30
+    limit: 30,
   });
 
   res.json({
@@ -126,3 +128,39 @@ export const getMrrMovementsData = asyncHandler(async (req: AuthRequest, res: Re
     mrr_movements_data: last30DailySums,
   });
 });
+
+export const getAverageStaying = asyncHandler(async (req: AuthRequest, res: Response) => {
+  // Last 30 days
+  const countLast30Days = await DailyActiveSubscriptionCount.findAll({
+    order: [
+      ['createdAt', 'DESC'],
+    ],
+    limit: 30,
+  });
+
+  const totalCountLast30Days = countLast30Days.reduce((acc: number, dailyActiveSubscriptionCount: DailyActiveSubscriptionCount) => acc + dailyActiveSubscriptionCount.dataValues.count, 0)
+  const averageStayingLast30Days = Math.round(totalCountLast30Days / 30);
+
+  // Last month
+  const today = moment();
+  const lastMonthStart = today.clone().subtract(1, 'months').startOf('month');
+  const lastMonthEnd = today.clone().subtract(1, 'months').endOf('month');
+  const daysInLastMonth = lastMonthStart.daysInMonth();
+
+  const countLastMonth = await DailyActiveSubscriptionCount.findAll({
+    where: {
+      createdAt: {
+        [Op.between]: [lastMonthStart.toDate(), lastMonthEnd.toDate()]
+      }
+    }
+  });
+
+  const totalCountLastMonth = countLastMonth.reduce((acc: number, dailyActiveSubscriptionCount: DailyActiveSubscriptionCount) => acc + dailyActiveSubscriptionCount.dataValues.count, 0)
+  const averageStayingLastMonth = Math.round(totalCountLastMonth / daysInLastMonth);
+
+  res.json({
+    ok: true,
+    average_staying_last_30_days: averageStayingLast30Days,
+    average_staying_last_month: averageStayingLastMonth,
+  })
+})
