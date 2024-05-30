@@ -15,18 +15,44 @@
 
 ## Calculation
 
-### Customer Churn Rate
+### 🐇 Customer Lifetime Value
 
-```
-Churn Rate = (Number of Canceled Subscriptions / Number of Active Subscriptions at the Start) * 100
-```
+- **ARPU** (Average Monthly Revenue Per User)
+  ```
+  ARPU = Total Monthly Revenue / Number of Active Customers
+  ```
 
-### Annual Run Rate
+- **Monthly Churn Rate**
+  ```
+  Monthly Churn Rate = Number of Customers Lost in a Month / Number of Customers at the Start of the Month
+  ```
 
-Be sure, Annual Run Rate calcualted by following formular as the provider has only monthly subscriptions.
-```
-Annual Run Rate = MRR * 12
-```
+- **Customer Lifetime**
+  ```
+  Customer Lifetime = 1 / Monthly Churn Rate
+  ```
+
+- **CLV** (Customer Lifetime Value)
+  ```
+  CLV = ARPU * Customer Lifetime
+  ```
+
+
+### 🐇 Customer Churn Rate
+
+- **Customer Churn Rate**
+  ```
+  Churn Rate = (Number of Canceled Subscriptions / Number of Active Subscriptions at the Start) * 100
+  ```
+
+### 🐇 Annual Run Rate
+
+- **Annual Run Rate**
+
+  Be sure, Annual Run Rate calcualted by following formular as the provider has only monthly subscriptions.
+  ```
+  Annual Run Rate = MRR * 12
+  ```
 
 
 ## Environment
