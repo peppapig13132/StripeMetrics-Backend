@@ -10,7 +10,7 @@
 - [x] Customer Churn Rate
 - [x] Free to paid subscriptions
 - [x] Free trials
-- [ ] Annual Run Rate
+- [x] Annual Run Rate
 
 
 ## Calculation
@@ -19,6 +19,13 @@
 
 ```
 Churn Rate = (Number of Canceled Subscriptions / Number of Active Subscriptions at the Start) * 100
+```
+
+### Annual Run Rate
+
+Be sure, Annual Run Rate calcualted by following formular as the provider has only monthly subscriptions.
+```
+Annual Run Rate = MRR * 12
 ```
 
 
