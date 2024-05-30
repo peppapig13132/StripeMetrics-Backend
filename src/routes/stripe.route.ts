@@ -4,6 +4,7 @@ import {
   getNewSubscriptionWithDateRange,
   getMrrMovementsData,
   getAverageStaying,
+  getCustomerLifetimeValue,
   getChurnRate,
   getFreeToPaidSubscriptions,
   getFreeTrials,
@@ -15,7 +16,8 @@ router.post('/monthly-recurring-revenue', getMrrData);
 router.post('/count-new-subscriptions', getNewSubscriptionWithDateRange);
 router.post('/mrr-movements', getMrrMovementsData);
 router.post('/average-staying', getAverageStaying);
-router.post('/customer-churn-rate', getChurnRate)
+router.post('/customer-lifetime-value', getCustomerLifetimeValue);
+router.post('/customer-churn-rate', getChurnRate);
 router.post('/free-to-paid-subscriptions', getFreeToPaidSubscriptions);
 router.post('/free-trials', getFreeTrials);
 

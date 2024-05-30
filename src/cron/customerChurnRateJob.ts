@@ -42,8 +42,8 @@ cron.schedule(cronExpressionDaily, async () => {
 cron.schedule(cronExpressionMonthly, async () => {
   const today = moment().tz(SERVER_GMT);
 
-  const startDateTimestampLastMonth = today.clone().startOf('month').subtract(1, 'month').unix();
-  const endDateTimestampLastMonth = today.clone().endOf('month').subtract(1, 'month').unix();
+  const startDateTimestampLastMonth = today.clone().subtract(1, 'month').startOf('month').unix();
+  const endDateTimestampLastMonth = today.clone().subtract(1, 'month').endOf('month').unix();
 
   try {
     const activeSubscriptionsAtStartLastMonth = await fetchSubscriptions(startDateTimestampLastMonth, endDateTimestampLastMonth, 'active');

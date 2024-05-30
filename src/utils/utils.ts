@@ -61,3 +61,22 @@ export const fetchSubscriptions = async (
     return [];
   }
 };
+
+export const fetchPaidInvoices = async (
+  startDateTimestamp: number,
+  endDateTimestamp: number,
+): Promise<Stripe.Invoice[]> => {
+  try {
+  const invoices = await stripe.invoices.list({
+    created: {
+      gte: startDateTimestamp,
+      lt: endDateTimestamp,
+    },
+    status: 'paid',
+  });
+  return invoices.data;
+  } catch(error) {
+    console.error('Error fetching paid invoices from Stripe:', error);
+    return [];
+  }
+}

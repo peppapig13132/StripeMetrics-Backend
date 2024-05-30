@@ -6,9 +6,10 @@ import moment from 'moment';
 import { Op } from 'sequelize';
 import { AuthRequest } from '../types/auto-request';
 import DailySum from '../model/dailySum.model';
-import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth, fetchSubscriptions } from '../utils/utils';
+import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth, fetchSubscriptions, fetchPaidInvoices } from '../utils/utils';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
 import ChurnRate from '../model/churnRate.model';
+import ActiveCustomerCount from '../model/activeCustomerCount.model';
 
 dotenv.config();
 
@@ -163,6 +164,52 @@ export const getAverageStaying = asyncHandler(async (req: AuthRequest, res: Resp
     ok: true,
     average_staying_last_30_days: averageStayingLast30Days,
     average_staying_last_month: averageStayingLastMonth,
+  })
+});
+
+export const getCustomerLifetimeValue = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const now = moment();
+
+  const startOfLastMonth = now.clone().subtract(1, 'month').startOf('month');
+  const endOfLastMonth = now.clone().subtract(1, 'month').endOf('month');
+
+  const paidInvoices = await fetchPaidInvoices(startOfLastMonth.unix(), endOfLastMonth.unix());
+
+  const totalRevenue = paidInvoices.reduce((total, invoice) => {
+    return total + invoice.amount_paid;
+  }, 0);
+
+  const activeCustomerLastMonthData = await ActiveCustomerCount.findOne({
+    where: {
+      createdAt: {
+        [Op.between]: [startOfLastMonth.toDate(), endOfLastMonth.toDate()]
+      },
+    },
+    order: [['createdAt', 'DESC']],
+  });
+  const activeCustomerLastMonth = activeCustomerLastMonthData ? activeCustomerLastMonthData.dataValues.count : 0;
+
+  const churnRateData = await ChurnRate.findOne({
+    where: {
+      rate_type: 'LAST_MONTH',
+    },
+    order: [['createdAt', 'DESC']],
+  });
+  const churnRateLastMonth = churnRateData ? churnRateData.dataValues.rate : 0;
+
+  let customerLifetimeValue = 0;
+
+  if(activeCustomerLastMonth !== 0 && churnRateLastMonth !== 0) {
+    const averageMonthlyRevenuePerUser = totalRevenue / activeCustomerLastMonth;
+    const customerLifetime = 1 / churnRateLastMonth;
+    customerLifetimeValue = averageMonthlyRevenuePerUser * customerLifetime;
+  } else {
+    customerLifetimeValue = 0;
+  }
+  
+  res.json({
+    ok: true,
+    customer_lifetime_value: customerLifetimeValue,
   })
 });
 
