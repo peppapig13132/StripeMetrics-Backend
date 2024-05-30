@@ -27,7 +27,7 @@ export const fetchSubscriptions = async (
     startDateTimestamp: number,
     endDateTimestamp: number,
     status: Stripe.Subscription.Status
-  ): Promise<Stripe.Subscription[] | void> => {
+  ): Promise<Stripe.Subscription[]> => {
   try {
     let allSubscriptions: Stripe.Subscription[] = [];
     let hasMore = true;
@@ -54,9 +54,10 @@ export const fetchSubscriptions = async (
         startingAfter = undefined;
       }
     }
-    
+
     return allSubscriptions;
   } catch (error) {
     console.error('Error fetching subscriptions from Stripe:', error);
+    return [];
   }
 };

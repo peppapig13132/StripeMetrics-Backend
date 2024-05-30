@@ -13,6 +13,15 @@
 - [ ] Annual Run Rate
 
 
+## Calculation
+
+### Customer Churn Rate
+
+```
+Churn Rate = (Number of Canceled Subscriptions / Number of Active Subscriptions at the Start) * 100
+```
+
+
 ## Environment
 
 - Node.js v20.12.2 (LTS)
