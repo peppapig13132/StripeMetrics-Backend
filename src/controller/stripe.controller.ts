@@ -201,7 +201,7 @@ export const getChurnRate = asyncHandler(async (req: AuthRequest, res: Response)
   if(numberOfActiveSubscriptionsAtStartLastMonth === 0) {
     churnRateLastMonth = 0
   } else {
-    churnRateLastMonth = Math.round(numberOfCanceledSubscriptionsLastMonth / numberOfActiveSubscriptionsAtStartLastMonth / 100) * 10000;
+    churnRateLastMonth = Math.round(numberOfCanceledSubscriptionsLastMonth / numberOfActiveSubscriptionsAtStartLastMonth * 1000) * 100;
   }
 
   res.json({
