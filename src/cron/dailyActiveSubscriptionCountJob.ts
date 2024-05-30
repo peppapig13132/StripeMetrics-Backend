@@ -10,7 +10,7 @@ const stripeSecretKey = process.env.STRIPE_SECRETKEY || "";
 const stripe = new Stripe(stripeSecretKey);
 
 const SERVER_GMT = process.env.SERVER_GMT || 'UTC';
-const cronExpression = process.env.SERVER_CRON_EXPRESSION || '0 0 0 * * *';
+const cronExpression = process.env.SERVER_DAILY_CRON_EXPRESSION || '0 0 0 * * *';
 
 cron.schedule(cronExpression, async () => {
   const now = moment().tz(SERVER_GMT);

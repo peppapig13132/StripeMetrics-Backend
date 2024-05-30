@@ -1,4 +1,4 @@
-# STRIPE DASHBOARD (BE)
+# STRIPE DASHBOARD (Backend)
 
 ## Dashboard Widget Endpoints
 

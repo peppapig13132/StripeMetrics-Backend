@@ -2,6 +2,7 @@
 // import DailyActiveSubscriptionCount from './model/dailyActiveSubscriptionCount.model';
 // import DailySum from './model/dailySum.model';
 // import User from './model/user.model';
+// import ChurnRate from "./model/churnRate.model";
 
 const syncModels = async () => {
   try {
@@ -9,6 +10,7 @@ const syncModels = async () => {
     // await DailySum.sync({ force: true });
     // await DailyActiveSubscriptionCount.sync({ force: true });
     // await ActiveCustomerCount.sync({force: true});
+    // await ChurnRate.sync({force: true});
   } catch (error) {
     console.error('Error synchronizing models:', error);
   }
