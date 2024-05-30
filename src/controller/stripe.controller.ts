@@ -228,10 +228,10 @@ export const getFreeTrials = asyncHandler(async (req: AuthRequest, res: Response
     },
   });
 
-  const freeTrialSubscriptionsLast30Days = subscriptionsLast30Days.data.filter((subscription) => {
+  const freeTrialsSubscriptionsLast30Days = subscriptionsLast30Days.data.filter((subscription) => {
     return subscription.trial_end && subscription.trial_end > subscription.created;
   });
-  const countFreeTrialSubscriptionsLast30Days = freeTrialSubscriptionsLast30Days.length;
+  const countFreeTrialsSubscriptionsLast30Days = freeTrialsSubscriptionsLast30Days.length;
 
   const countAllSubscriptionsLast30Days = subscriptionsLast30Days.data.length;
 
@@ -243,18 +243,18 @@ export const getFreeTrials = asyncHandler(async (req: AuthRequest, res: Response
     },
   });
 
-  const freeTrialSubscriptionsLastMonth = subscriptionsLastMonth.data.filter((subscription) => {
+  const freeTrialsSubscriptionsLastMonth = subscriptionsLastMonth.data.filter((subscription) => {
     return subscription.trial_end && subscription.trial_end > subscription.created;
   });
-  const countFreeTrialSubscriptionsLastMonth = freeTrialSubscriptionsLastMonth.length;
+  const countFreeTrialsSubscriptionsLastMonth = freeTrialsSubscriptionsLastMonth.length;
 
   const countAllSubscriptionsLastMonth = subscriptionsLastMonth.data.length;
 
   res.json({
     ok: true,
-    count_free_trial_last_30_days: countFreeTrialSubscriptionsLast30Days,
+    count_free_trials_last_30_days: countFreeTrialsSubscriptionsLast30Days,
     count_all_last_30_days: countAllSubscriptionsLast30Days,
-    count_free_trial_last_month: countFreeTrialSubscriptionsLastMonth,
+    count_free_trials_last_month: countFreeTrialsSubscriptionsLastMonth,
     count_all_last_month: countAllSubscriptionsLastMonth,
   });
 });
