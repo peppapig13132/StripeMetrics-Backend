@@ -8,6 +8,7 @@ import { AuthRequest } from '../types/auto-request';
 import DailySum from '../model/dailySum.model';
 import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth, fetchSubscriptions } from '../utils/utils';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
+import ChurnRate from '../model/churnRate.model';
 
 dotenv.config();
 
@@ -166,43 +167,23 @@ export const getAverageStaying = asyncHandler(async (req: AuthRequest, res: Resp
 });
 
 export const getChurnRate = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const today = moment();
+  const churnRateLast30DaysData = await ChurnRate.findOne({
+    where: {
+      rate_type: 'LAST_30_DAYS',
+    },
+    order: [['createdAt', 'DESC']],
+  });
 
-  // Last 30 days
-  const startDateTimestampLast30Days = today.clone().subtract(30, 'days').unix();
-  const endDateTimestampLast30Days = today.unix();
+  const churnRateLast30Days = churnRateLast30DaysData ? churnRateLast30DaysData.dataValues.rate : 0;
 
-  const activeSubscriptionsAtStartLast30Days = await fetchSubscriptions(startDateTimestampLast30Days, endDateTimestampLast30Days, 'active');
-  const canceledSubscriptionsLast30Days = await fetchSubscriptions(startDateTimestampLast30Days, endDateTimestampLast30Days, 'canceled');
+  const churnRateLastMonthData = await ChurnRate.findOne({
+    where: {
+      rate_type: 'LAST_MONTH',
+    },
+    order: [['createdAt', 'DESC']],
+  });
 
-  const numberOfActiveSubscriptionsAtStartLast30Days = activeSubscriptionsAtStartLast30Days.length;
-  const numberOfCanceledSubscriptionsLast30Days = canceledSubscriptionsLast30Days.length;
-
-  let churnRateLast30Days = 0;
-
-  if(numberOfActiveSubscriptionsAtStartLast30Days === 0) {
-    churnRateLast30Days = 0
-  } else {
-    churnRateLast30Days = Math.round(numberOfCanceledSubscriptionsLast30Days / numberOfActiveSubscriptionsAtStartLast30Days / 100) * 10000;
-  }
-
-  // Last Month
-  const startDateTimestampLastMonth = today.clone().subtract(30, 'days').unix();
-  const endDateTimestampLastMonth = today.unix();
-
-  const activeSubscriptionsAtStartLastMonth = await fetchSubscriptions(startDateTimestampLastMonth, endDateTimestampLastMonth, 'active');
-  const canceledSubscriptionsLastMonth = await fetchSubscriptions(startDateTimestampLastMonth, endDateTimestampLastMonth, 'canceled');
-
-  const numberOfActiveSubscriptionsAtStartLastMonth = activeSubscriptionsAtStartLastMonth.length;
-  const numberOfCanceledSubscriptionsLastMonth = canceledSubscriptionsLastMonth.length;
-
-  let churnRateLastMonth = 0;
-
-  if(numberOfActiveSubscriptionsAtStartLastMonth === 0) {
-    churnRateLastMonth = 0
-  } else {
-    churnRateLastMonth = Math.round(numberOfCanceledSubscriptionsLastMonth / numberOfActiveSubscriptionsAtStartLastMonth * 1000) * 100;
-  }
+  const churnRateLastMonth = churnRateLastMonthData ? churnRateLastMonthData.dataValues.rate : 0;
 
   res.json({
     ok: true,
