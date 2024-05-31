@@ -2,7 +2,8 @@ import './db';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import router from "./routes";
+import path from 'path';
+import router from './routes';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const port = process.env.APP_PORT || 8000;
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, '..', 'static')));
 router(app);
 
 import './cron';
