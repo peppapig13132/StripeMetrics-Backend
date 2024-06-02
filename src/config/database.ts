@@ -19,12 +19,17 @@ sequelize.authenticate().then(() => {
     console.log(err);
 });
 
-// sequelize.sync({ force: true })
-//     .then(() => {
-//         console.log('Models synchronized with database.');
-//     })
-//     .catch((error) => {
-//         console.error('Error synchronizing models:', error);
-//     });
+const syncDatabase = async () => {
+  if (process.env.DB_SYNC === 'true') {
+    try {
+      sequelize.sync({ force: true });
+      console.log('Models synchronized with database.');
+    } catch(error) {
+      console.error('Error synchronizing models:', error);
+    }
+  }
+};
+  
+syncDatabase();
 
 export default sequelize;
