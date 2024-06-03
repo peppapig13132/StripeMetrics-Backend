@@ -3,10 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const dbHost = process.env.DB_HOST;
-const dbName = process.env.DB_NAME;
-const dbAdmin = process.env.DB_ADMIN;
-const dbPassword = process.env.DB_PASSWORD;
+const dbHost = process.env.DB_HOST || 'localhost';
+const dbName = process.env.DB_NAME || 'stripe_dashboard';
+const dbAdmin = process.env.DB_ADMIN || 'postgres';
+const dbPassword = process.env.DB_PASSWORD || 'postgres';
 
 const sequelize = new Sequelize(`${dbName}`, `${dbAdmin}`, `${dbPassword}`, {
     host: `${dbHost}`,
