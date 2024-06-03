@@ -128,3 +128,13 @@
   ```
   Annual Run Rate = MRR * 12
   ```
+
+
+## Deploy Node.js application on cPanel
+- Modify your `.htaccess` file in the domain root directory.
+    ```
+    # If your server running on port 8000
+    RewriteEngine on
+    RewriteRule ^(.*)$ http://127.0.0.1:8000/$1 [P]
+    ```
+- Use `pm2` module. More about `pm2`, click [here](https://pm2.keymetrics.io/).
