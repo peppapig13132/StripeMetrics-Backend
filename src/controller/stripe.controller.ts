@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import moment from 'moment';
 import { Op } from 'sequelize';
 import { AuthRequest } from '../types/auto-request';
-import { getFirstDayOfTheMonth, getDate30DaysBefore, getFirstDayOfLastMonth, fetchPaidInvoices } from '../utils/utils';
+import { fetchPaidInvoices, calculateMrr, getLastDateOfLastMonth, getFirstDateOfLastMonth, fetchSubscriptions } from '../utils/utils';
 import DailySum from '../model/dailySum.model';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
 import ChurnRate from '../model/churnRate.model';
@@ -24,42 +24,8 @@ export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, 
     });
   }
 
-  // Last 30 days
-  const now = moment().unix();
-  const thirtyDaysAgo = getDate30DaysBefore(now);
-
-  const subscriptionsOfLast30Days = await stripe.subscriptions.list({
-    created: {
-      gte: thirtyDaysAgo,
-      lte: now,
-    },
-  });
-
-  const mrrCostOfLast30Days = subscriptionsOfLast30Days.data.reduce((totalMRR, subscription) => {
-    const amount = subscription.items.data[0].plan.amount || 0;
-    return totalMRR + amount;
-  }, 0);
-
-  const mrrOfLast30DaysInDollars = mrrCostOfLast30Days / 100;
-
-  // Last month
-  const firstDayOfLastMonth = getFirstDayOfLastMonth(now);
-  const firstDayOfThisMonth = getFirstDayOfTheMonth(now);
-
-  const subscriptionsOfLastMonth = await stripe.subscriptions.list({
-    created: {
-      gte: firstDayOfLastMonth,
-      lte: firstDayOfThisMonth,
-    },
-  });
-
-  const mrrCostOfLastMonth = subscriptionsOfLastMonth.data.reduce((totalMRR, subscription) => {
-    const amount = subscription.items.data[0].plan.amount || 0;
-    return totalMRR + amount;
-  }, 0);
-
-  const mrrOfLastMonthInDollars = mrrCostOfLastMonth / 100;
-
+  const mrrLast30Days = await calculateMrr(moment().subtract(30, 'days').unix(), moment().unix());
+  const mrrLastMonth = await calculateMrr(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix());
 
   const last30DailySums = await DailySum.findAll({
     order: [
@@ -70,13 +36,13 @@ export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, 
 
   res.json({
     ok: true,
-    mrr_last_30days: mrrOfLast30DaysInDollars,
-    mrr_last_month: mrrOfLastMonthInDollars,
+    mrr_last_30days: mrrLast30Days,
+    mrr_last_month: mrrLastMonth,
     mrr_data: last30DailySums,
   });
 })
 
-export const getNewSubscriptionWithDateRange: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const countNewSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   if(stripeSecretKey == '') {
     res.json({
       ok: false,
@@ -84,36 +50,13 @@ export const getNewSubscriptionWithDateRange: RequestHandler = asyncHandler(asyn
     });
   }
 
-  // Last 30 days
-  const now = moment().unix();
-  const thirtyDaysAgo = getDate30DaysBefore(now);
-
-  const subscriptionsOfLast30Days = await stripe.subscriptions.list({
-    created: {
-      gte: thirtyDaysAgo,
-      lte: now,
-    },
-  });
-
-  const countOfLast30Days = subscriptionsOfLast30Days.data.length;
-
-  // Last month
-  const firstDayOfLastMonth = getFirstDayOfLastMonth(now);
-  const firstDayOfThisMonth = getFirstDayOfTheMonth(now);
-
-  const subscriptionsOfLastMonth = await stripe.subscriptions.list({
-    created: {
-      gte: firstDayOfLastMonth,
-      lte: firstDayOfThisMonth,
-    },
-  });
-
-  const countOfLastMonth = subscriptionsOfLastMonth.data.length;
+  const countLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix())).length;
+  const countLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix())).length;
 
   res.json({
     ok: true,
-    count_last_30days: countOfLast30Days,
-    count_last_month: countOfLastMonth,
+    count_last_30days: countLast30Days,
+    count_last_month: countLastMonth,
   });
 });
 

@@ -7,26 +7,22 @@ dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRETKEY || '';
 const stripe = new Stripe(stripeSecretKey);
 
-export const getFirstDayOfTheMonth = (timestamp: number): number => {
-  return moment.unix(timestamp).startOf('month').unix();
+export const getFirstDateOfLastMonth = (): moment.Moment => {
+  return moment().startOf('month').subtract(1, 'months');
 }
 
-export const getDate30DaysBefore = (timestamp: number): number => {
-  return moment.unix(timestamp).subtract(30, 'days').unix();
+export const getLastDateOfLastMonth = (): moment.Moment => {
+  return moment().endOf('month').subtract(1, 'months');
 }
 
-export const getFirstDayOfLastMonth = (timestamp: number): number => {
-  return moment.unix(timestamp).startOf('month').subtract(1, 'months').unix();
-}
-
-export const getDaysOfTheMonth = (timestamp: number): number => {
-  return moment.unix(timestamp).daysInMonth();
+export const getDaysOfTheMonth = (moment: moment.Moment): number => {
+  return moment.daysInMonth();
 }
 
 export const fetchSubscriptions = async (
     startDateTimestamp: number,
     endDateTimestamp: number,
-    status: Stripe.Subscription.Status
+    status?: Stripe.Subscription.Status
   ): Promise<Stripe.Subscription[]> => {
   try {
     let allSubscriptions: Stripe.Subscription[] = [];
@@ -35,14 +31,17 @@ export const fetchSubscriptions = async (
 
     while (hasMore) {
       const params: Stripe.SubscriptionListParams = {
-        created: {
-          gte: startDateTimestamp,
-          lte: endDateTimestamp,
-        },
-        status: status,
-        limit: 100,
-        starting_after: startingAfter,
+          created: {
+              gte: startDateTimestamp,
+              lte: endDateTimestamp,
+          },
+          limit: 100,
+          starting_after: startingAfter,
       };
+
+      if (status) {
+          params.status = status;
+      }
 
       const response = await stripe.subscriptions.list(params);
       allSubscriptions = allSubscriptions.concat(response.data);
@@ -60,7 +59,7 @@ export const fetchSubscriptions = async (
     console.error('Error fetching subscriptions from Stripe:', error);
     return [];
   }
-};
+}
 
 export const fetchPaidInvoices = async (
   startDateTimestamp: number,
@@ -95,4 +94,26 @@ export const fetchPaidInvoices = async (
   }
 
   return allInvoices;
+}
+
+export const calculateMrr = async (startDateTimestamp: number, endDateTimestamp: number): Promise<number> => {
+  let mrr = 0;
+
+  try {
+    const invoices = await fetchPaidInvoices(startDateTimestamp, endDateTimestamp);
+
+    invoices.forEach((invoice: Stripe.Invoice) => {
+      invoice.lines.data.forEach((lineItem: Stripe.InvoiceLineItem) => {
+        if(lineItem.type === 'subscription') {
+          let amount = (lineItem.plan?.amount === null || lineItem.plan?.amount === undefined) ? 0 : lineItem.plan.amount;
+          mrr += amount / 100;
+        }
+      })
+    });
+
+    return mrr;
+  } catch(error) {
+    console.log('Error calculating MRR from Stripe:', error);
+    return 0;
+  }
 }

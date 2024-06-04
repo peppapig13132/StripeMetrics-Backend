@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   getMrrData,
-  getNewSubscriptionWithDateRange,
+  countNewSubscriptions,
   getMrrMovementsData,
   getAverageStaying,
   getCustomerLifetimeValue,
@@ -13,7 +13,7 @@ import {
 const router: Router = Router();
 
 router.post('/monthly-recurring-revenue', getMrrData);
-router.post('/count-new-subscriptions', getNewSubscriptionWithDateRange);
+router.post('/count-new-subscriptions', countNewSubscriptions);
 router.post('/mrr-movements', getMrrMovementsData);
 router.post('/average-staying', getAverageStaying);
 router.post('/customer-lifetime-value', getCustomerLifetimeValue);
