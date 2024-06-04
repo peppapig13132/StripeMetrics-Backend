@@ -66,17 +66,33 @@ export const fetchPaidInvoices = async (
   startDateTimestamp: number,
   endDateTimestamp: number,
 ): Promise<Stripe.Invoice[]> => {
+  let allInvoices: Stripe.Invoice[] = [];
+  let startingAfter: string | undefined = undefined;
+
   try {
-  const invoices = await stripe.invoices.list({
-    created: {
-      gte: startDateTimestamp,
-      lt: endDateTimestamp,
-    },
-    status: 'paid',
-  });
-  return invoices.data;
+    while(true) {
+      const invoices: Stripe.ApiList<Stripe.Invoice> = await stripe.invoices.list({
+        created: {
+          gte: startDateTimestamp,
+          lt: endDateTimestamp,
+        },
+        status: 'paid',
+        starting_after: startingAfter,
+        limit: 100,
+      });
+
+      allInvoices.push(...invoices.data);
+
+      if(invoices.has_more) {
+        startingAfter = invoices.data[invoices.data.length - 1].id;
+      } else {
+        break;
+      }
+    }
   } catch(error) {
-    console.error('Error fetching paid invoices from Stripe:', error);
+    console.log('Error fetching paid invoices from Stripe:', error);
     return [];
   }
+
+  return allInvoices;
 }

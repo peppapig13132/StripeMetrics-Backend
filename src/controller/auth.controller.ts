@@ -20,7 +20,9 @@ export const signup: RequestHandler = asyncHandler(async (req: Request, res: Res
 
   res.json({
     ok: true,
-    user: user
+    user: {
+      user_id: user.dataValues.id
+    }
   });
 });
 
@@ -37,14 +39,14 @@ export const login: RequestHandler = asyncHandler(async (req: Request, res: Resp
     const isSame = await bcrypt.compare(u.password, user.dataValues.password);
 
     if(isSame) {
-      const secret = process.env.SECRETKEY;
+      const secret = process.env.SECRETKEY || '';
 
       const token = jwt.sign(
         {
           id: user.dataValues.id,
           email: user.dataValues.email,
         },
-        `${secret}`,
+        secret,
         {
           expiresIn: 1 * 24 * 60 * 60,
         }
