@@ -1,5 +1,5 @@
 import './db';
-import express from 'express';
+import express, { Application } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import path from 'path';
@@ -10,7 +10,7 @@ dotenv.config();
 const SERVER_GMT = process.env.SERVER_GMT || 'UTC';
 process.env.TZ = SERVER_GMT;
 
-const app = express();
+const app: Application = express();
 
 const port = process.env.APP_PORT || 8000;
 

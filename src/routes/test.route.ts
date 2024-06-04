@@ -3,7 +3,7 @@ import {
   test,
 } from "../controller/test.controller";
 
-const router = Router();
+const router: Router = Router();
 
 router.get("/", test);
 

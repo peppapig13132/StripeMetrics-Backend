@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { RequestHandler, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
@@ -16,7 +16,7 @@ dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRETKEY || '';
 const stripe = new Stripe(stripeSecretKey);
 
-export const getMrrData = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   if(stripeSecretKey == '') {
     res.json({
       ok: false,
@@ -76,7 +76,7 @@ export const getMrrData = asyncHandler(async (req: AuthRequest, res: Response) =
   });
 })
 
-export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getNewSubscriptionWithDateRange: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   if(stripeSecretKey == '') {
     res.json({
       ok: false,
@@ -117,7 +117,7 @@ export const getNewSubscriptionWithDateRange = asyncHandler(async (req: AuthRequ
   });
 });
 
-export const getMrrMovementsData = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getMrrMovementsData: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   const last30DailySums = await DailySum.findAll({
     order: [
       ['createdAt', 'DESC']
@@ -131,7 +131,7 @@ export const getMrrMovementsData = asyncHandler(async (req: AuthRequest, res: Re
   });
 });
 
-export const getAverageStaying = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   // Last 30 days
   const countLast30Days = await DailyActiveSubscriptionCount.findAll({
     order: [
@@ -167,7 +167,7 @@ export const getAverageStaying = asyncHandler(async (req: AuthRequest, res: Resp
   })
 });
 
-export const getCustomerLifetimeValue = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   const now = moment();
 
   const startOfLastMonth = now.clone().subtract(1, 'month').startOf('month');
@@ -213,7 +213,7 @@ export const getCustomerLifetimeValue = asyncHandler(async (req: AuthRequest, re
   })
 });
 
-export const getChurnRate = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   const churnRateLast30DaysData = await ChurnRate.findOne({
     where: {
       rate_type: 'LAST_30_DAYS',
@@ -239,7 +239,7 @@ export const getChurnRate = asyncHandler(async (req: AuthRequest, res: Response)
   })
 });
 
-export const getFreeToPaidSubscriptions = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getFreeToPaidSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   const today = moment();
 
   // Last 30 days
@@ -292,7 +292,7 @@ export const getFreeToPaidSubscriptions = asyncHandler(async (req: AuthRequest, 
   });
 });
 
-export const getFreeTrials = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getFreeTrials: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   const today = moment();
 
   // Last 30 days

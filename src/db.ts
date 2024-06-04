@@ -4,7 +4,7 @@
 // import User from './model/user.model';
 // import ChurnRate from "./model/churnRate.model";
 
-const syncModels = async () => {
+const syncModels: () => Promise<void> = async () => {
   try {
     // await User.sync({ force: true });
     // await DailySum.sync({ force: true });

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -7,7 +7,7 @@ import User from "../model/user.model";
 
 dotenv.config();
 
-export const signup = asyncHandler(async (req: Request, res: Response) => {
+export const signup: RequestHandler = asyncHandler(async (req: Request, res: Response) => {
   const u = req.body;
 
   const saltRounds = 10;
@@ -24,7 +24,7 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export const login = asyncHandler(async (req: Request, res: Response) => {
+export const login: RequestHandler = asyncHandler(async (req: Request, res: Response) => {
   const u = req.body;
   
   const user = await User.findOne({

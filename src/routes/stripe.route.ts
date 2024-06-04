@@ -10,7 +10,7 @@ import {
   getFreeTrials,
 } from '../controller/stripe.controller';
 
-const router = Router();
+const router: Router = Router();
 
 router.post('/monthly-recurring-revenue', getMrrData);
 router.post('/count-new-subscriptions', getNewSubscriptionWithDateRange);
