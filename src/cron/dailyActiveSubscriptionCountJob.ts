@@ -6,7 +6,7 @@ import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.
 
 config();
 
-const stripeSecretKey = process.env.STRIPE_SECRETKEY || "";
+const stripeSecretKey = process.env.STRIPE_SECRETKEY || '';
 const stripe = new Stripe(stripeSecretKey);
 
 const SERVER_GMT = process.env.SERVER_GMT || 'UTC';

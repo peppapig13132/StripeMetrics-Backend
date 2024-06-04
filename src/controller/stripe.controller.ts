@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import Stripe from 'stripe';
 import moment from 'moment';
 import { Op } from 'sequelize';
-import { AuthRequest } from '../types/auto-request';
+import { AuthRequest } from '../interfaces/interfaces';
 import { fetchPaidInvoices, calculateMrr, getLastDateOfLastMonth, getFirstDateOfLastMonth, fetchSubscriptions } from '../utils/utils';
 import DailySum from '../model/dailySum.model';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
@@ -111,10 +111,8 @@ export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRe
 });
 
 export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const now = moment();
-
-  const startOfLastMonth = now.clone().subtract(1, 'month').startOf('month');
-  const endOfLastMonth = now.clone().subtract(1, 'month').endOf('month');
+  const startOfLastMonth = getFirstDateOfLastMonth();
+  const endOfLastMonth = getLastDateOfLastMonth();
 
   const paidInvoices = await fetchPaidInvoices(startOfLastMonth.unix(), endOfLastMonth.unix());
 

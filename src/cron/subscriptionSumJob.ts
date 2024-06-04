@@ -6,7 +6,7 @@ import DailySum from '../model/dailySum.model';
 
 config();
 
-const stripeSecretKey = process.env.STRIPE_SECRETKEY || "";
+const stripeSecretKey = process.env.STRIPE_SECRETKEY || '';
 const stripe = new Stripe(stripeSecretKey);
 
 const SERVER_GMT = process.env.SERVER_GMT || 'UTC';
@@ -14,7 +14,6 @@ const cronExpression = process.env.SERVER_DAILY_CRON_EXPRESSION || '0 0 0 * * *'
 
 cron.schedule(cronExpression, async () => {
   const now = moment().tz(SERVER_GMT);
-  // const startOfToday = now.clone().startOf('day').unix();
   const endOfToday = now.clone().endOf('day').unix();
   const oneMonthBefore = now.clone().startOf('day').subtract(1, 'months').unix();
 

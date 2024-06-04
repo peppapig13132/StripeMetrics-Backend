@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
-import User from "../model/user.model";
-import { AuthRequest } from "../types/auto-request";
+import { Request, Response, NextFunction } from 'express';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import User from '../model/user.model';
+import { AuthRequest } from '../interfaces/interfaces';
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ export const checkDuplicatedEmail = async (req: Request, res: Response, next: Ne
   if(user) {
     return res.json({
       ok: false,
-      msg: "middleware: username already taken",
+      msg: 'middleware: username already taken',
     });
   }
 
@@ -26,13 +26,13 @@ export const checkDuplicatedEmail = async (req: Request, res: Response, next: Ne
 }
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
   if(!token) {
     return res.json({
       ok: false,
-      msg: "no token provided",
+      msg: 'no token provided',
     });
   }
 
@@ -43,7 +43,7 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
       if(err) {
         return res.json({
           ok: false,
-          msg: "invalid token",
+          msg: 'invalid token',
         });
       }
 
@@ -67,7 +67,7 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
       } else {
         return res.json({
           ok: false,
-          msg: "invalid token",
+          msg: 'invalid token',
         });
       }
     }
