@@ -87,15 +87,14 @@ export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRe
   const averageStayingLast30Days = Math.round(totalCountLast30Days / 30);
 
   // Last month
-  const today = moment();
-  const lastMonthStart = today.clone().subtract(1, 'months').startOf('month');
-  const lastMonthEnd = today.clone().subtract(1, 'months').endOf('month');
-  const daysInLastMonth = lastMonthStart.daysInMonth();
+  const startOfLastMonth = getFirstDateOfLastMonth().startOf('month');
+  const endOfLastMonth = getLastDateOfLastMonth().endOf('month');
+  const daysInLastMonth = startOfLastMonth.daysInMonth();
 
   const countLastMonth = await DailyActiveSubscriptionCount.findAll({
     where: {
       createdAt: {
-        [Op.between]: [lastMonthStart.toDate(), lastMonthEnd.toDate()]
+        [Op.between]: [startOfLastMonth.toDate(), endOfLastMonth.toDate()]
       }
     }
   });
@@ -107,6 +106,7 @@ export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRe
     ok: true,
     average_staying_last_30_days: averageStayingLast30Days,
     average_staying_last_month: averageStayingLastMonth,
+    totalCountLast30Days: totalCountLast30Days
   })
 });
 

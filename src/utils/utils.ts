@@ -15,10 +15,6 @@ export const getLastDateOfLastMonth = (): moment.Moment => {
   return moment().endOf('month').subtract(1, 'months');
 }
 
-export const getDaysOfTheMonth = (moment: moment.Moment): number => {
-  return moment.daysInMonth();
-}
-
 export const fetchSubscriptions = async (
     startDateTimestamp: number,
     endDateTimestamp: number,
