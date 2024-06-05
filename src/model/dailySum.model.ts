@@ -1,5 +1,5 @@
-import { Model, DataTypes } from "sequelize";
-import sequelize from "../config/database";
+import { Model, DataTypes } from 'sequelize';
+import sequelize from '../config/database';
 import moment from 'moment';
 
 class DailySum extends Model {}
@@ -22,7 +22,7 @@ DailySum.init(
   },
   {
     sequelize,
-    modelName: "DailySum"
+    modelName: 'DailySum'
   }
 );
 
