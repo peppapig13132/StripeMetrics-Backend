@@ -1,9 +1,9 @@
-import { Request, RequestHandler, Response } from "express";
-import asyncHandler from "express-async-handler";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-import User from "../model/user.model";
+import { Request, RequestHandler, Response } from 'express';
+import asyncHandler from 'express-async-handler';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import User from '../model/user.model';
 
 dotenv.config();
 
@@ -63,13 +63,13 @@ export const login: RequestHandler = asyncHandler(async (req: Request, res: Resp
     } else {
       res.json({
         ok: false,
-        msg: "incorrect password",
+        msg: 'incorrect password',
       });
     }
   } else {
     res.json({
       ok: false,
-      msg: "unauthorized user",
+      msg: 'unauthorized user',
     });
   }
 })

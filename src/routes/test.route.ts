@@ -1,10 +1,10 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   test,
-} from "../controller/test.controller";
+} from '../controller/test.controller';
 
 const router: Router = Router();
 
-router.get("/", test);
+router.get('/', test);
 
 export default router;

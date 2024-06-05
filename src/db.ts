@@ -2,8 +2,8 @@
 // import DailyActiveSubscriptionCount from './model/dailyActiveSubscriptionCount.model';
 // import DailySum from './model/dailySum.model';
 // import User from './model/user.model';
-// import ChurnRate from "./model/churnRate.model";
-import StripeOldData from "./model/stripeOldData.model";
+// import ChurnRate from './model/churnRate.model';
+import StripeOldData from './model/stripeOldData.model';
 
 const syncModels: () => Promise<void> = async () => {
   try {
