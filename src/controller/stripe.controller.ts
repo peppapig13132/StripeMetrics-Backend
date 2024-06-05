@@ -1,7 +1,6 @@
 import { RequestHandler, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import dotenv from 'dotenv';
-import Stripe from 'stripe';
 import moment from 'moment';
 import { Op } from 'sequelize';
 import { AuthRequest } from '../interfaces/interfaces';
@@ -13,17 +12,7 @@ import ActiveCustomerCount from '../model/activeCustomerCount.model';
 
 dotenv.config();
 
-const stripeSecretKey = process.env.STRIPE_SECRETKEY || '';
-const stripe = new Stripe(stripeSecretKey);
-
 export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  if(stripeSecretKey == '') {
-    res.json({
-      ok: false,
-      msg: 'stripe key is required',
-    });
-  }
-
   const mrrLast30Days = await calculateMrr(moment().subtract(30, 'days').unix(), moment().unix());
   const mrrLastMonth = await calculateMrr(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix());
 
@@ -43,13 +32,6 @@ export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, 
 })
 
 export const countNewSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  if(stripeSecretKey == '') {
-    res.json({
-      ok: false,
-      msg: 'stripe key is required',
-    });
-  }
-
   const countLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix())).length;
   const countLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix())).length;
 

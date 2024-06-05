@@ -11,14 +11,9 @@ const cronExpressionDaily = process.env.SERVER_DAILY_CRON_EXPRESSION || '0 0 0 *
 const cronExpressionMonthly = process.env.SERVER_MONTHLY_CRON_EXPRESSION || '0 0 0 1 * *';
 
 cron.schedule(cronExpressionDaily, async () => {
-  const today = moment().tz(SERVER_GMT);
-
-  const startDateTimestampLast30Days = today.clone().subtract(30, 'days').unix();
-  const endDateTimestampLast30Days = today.unix();
-
   try {
-    const activeSubscriptionsAtStartLast30Days = await fetchSubscriptions(startDateTimestampLast30Days, endDateTimestampLast30Days, 'active');
-    const canceledSubscriptionsLast30Days = await fetchSubscriptions(startDateTimestampLast30Days, endDateTimestampLast30Days, 'canceled');
+    const activeSubscriptionsAtStartLast30Days = await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix(), 'active');
+    const canceledSubscriptionsLast30Days = await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix(), 'canceled');
 
     const numberOfActiveSubscriptionsAtStartLast30Days = activeSubscriptionsAtStartLast30Days.length;
     const numberOfCanceledSubscriptionsLast30Days = canceledSubscriptionsLast30Days.length;
@@ -40,14 +35,9 @@ cron.schedule(cronExpressionDaily, async () => {
 });
 
 cron.schedule(cronExpressionMonthly, async () => {
-  const today = moment().tz(SERVER_GMT);
-
-  const startDateTimestampLastMonth = today.clone().subtract(1, 'month').startOf('month').unix();
-  const endDateTimestampLastMonth = today.clone().subtract(1, 'month').endOf('month').unix();
-
   try {
-    const activeSubscriptionsAtStartLastMonth = await fetchSubscriptions(startDateTimestampLastMonth, endDateTimestampLastMonth, 'active');
-    const canceledSubscriptionsLastMonth = await fetchSubscriptions(startDateTimestampLastMonth, endDateTimestampLastMonth, 'canceled');
+    const activeSubscriptionsAtStartLastMonth = await fetchSubscriptions(moment().subtract(1, 'month').startOf('month').unix(), moment().subtract(1, 'month').endOf('month').unix(), 'active');
+    const canceledSubscriptionsLastMonth = await fetchSubscriptions(moment().subtract(1, 'month').startOf('month').unix(), moment().subtract(1, 'month').endOf('month').unix(), 'canceled');
 
     const numberOfActiveSubscriptionsAtStartLastMonth = activeSubscriptionsAtStartLastMonth.length;
     const numberOfCanceledSubscriptionsLastMonth = canceledSubscriptionsLastMonth.length;
