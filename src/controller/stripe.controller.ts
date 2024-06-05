@@ -200,33 +200,24 @@ export const getFreeTrials: RequestHandler = asyncHandler(async (req: AuthReques
   const today = moment();
 
   // Last 30 days
-  const subscriptionsLast30Days = await stripe.subscriptions.list({
-    created: {
-      gte: today.clone().subtract(30, 'days').unix(),
-    },
-  });
-
-  const freeTrialsSubscriptionsLast30Days = subscriptionsLast30Days.data.filter((subscription) => {
-    return subscription.trial_end && subscription.trial_end > subscription.created;
+  const subscriptionsLast30Days = await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix());
+  const freeTrialsSubscriptionsLast30Days = subscriptionsLast30Days.filter((subscription) => {
+    return  subscription.trial_end &&
+            subscription.trial_end > moment().subtract(30, 'days').unix() &&
+            subscription.trial_end < moment().unix();
   });
   const countFreeTrialsSubscriptionsLast30Days = freeTrialsSubscriptionsLast30Days.length;
-
-  const countAllSubscriptionsLast30Days = subscriptionsLast30Days.data.length;
+  const countAllSubscriptionsLast30Days = subscriptionsLast30Days.length;
 
   // Last month
-  const subscriptionsLastMonth = await stripe.subscriptions.list({
-    created: {
-      gte: today.clone().subtract(1, 'months').startOf('month').unix(),
-      lte: today.clone().startOf('month').unix(),
-    },
-  });
-
-  const freeTrialsSubscriptionsLastMonth = subscriptionsLastMonth.data.filter((subscription) => {
-    return subscription.trial_end && subscription.trial_end > subscription.created;
+  const subscriptionsLastMonth = await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix());
+  const freeTrialsSubscriptionsLastMonth = subscriptionsLastMonth.filter((subscription) => {
+    return  subscription.trial_end &&
+            subscription.trial_end > getFirstDateOfLastMonth().unix() &&
+            subscription.trial_end < getLastDateOfLastMonth().unix();
   });
   const countFreeTrialsSubscriptionsLastMonth = freeTrialsSubscriptionsLastMonth.length;
-
-  const countAllSubscriptionsLastMonth = subscriptionsLastMonth.data.length;
+  const countAllSubscriptionsLastMonth = subscriptionsLastMonth.length;
 
   res.json({
     ok: true,
