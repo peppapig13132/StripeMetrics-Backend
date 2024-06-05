@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import moment from 'moment-timezone';
+import moment from 'moment';
 import { config } from 'dotenv';
 import { fetchSubscriptions } from '../utils/utils';
 import ChurnRate from '../model/churnRate.model';
