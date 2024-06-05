@@ -6,7 +6,7 @@ class StripeOldData extends Model {}
 StripeOldData.init(
   {
     id: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
