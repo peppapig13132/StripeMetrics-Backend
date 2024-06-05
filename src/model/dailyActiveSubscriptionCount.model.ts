@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "../config/database";
+import moment from 'moment';
 
 class DailyActiveSubscriptionCount extends Model {}
 
@@ -13,7 +14,11 @@ DailyActiveSubscriptionCount.init(
     count: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
-    }
+    },
+    date: {
+      type: DataTypes.DATE,
+      defaultValue: moment().startOf('date').toDate(),
+    },
   },
   {
     sequelize,

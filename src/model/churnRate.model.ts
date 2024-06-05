@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/database';
+import moment from 'moment';
 
 class ChurnRate extends Model {}
 
@@ -20,7 +21,11 @@ ChurnRate.init(
         'LAST_30_DAYS',
       ),
       defaultValue: 'LAST_30_DAYS',
-    }
+    },
+    date: {
+      type: DataTypes.DATE,
+      defaultValue: moment().startOf('date').toDate(),
+    },
   },
   {
     sequelize,
