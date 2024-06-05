@@ -181,48 +181,11 @@ export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest
 });
 
 export const getFreeToPaidSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const today = moment();
+  const countFreeToPaidSubscriptionsLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix(), 'active')).length;
+  const countAllSubscriptionsLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix())).length;
 
-  // Last 30 days
-  const subscriptionsLast30Days = await stripe.subscriptions.list({
-    created: {
-      gte: today.clone().subtract(30, 'days').unix(),
-    },
-  });
-
-  const freeToPaidSubscriptionsLast30Days = subscriptionsLast30Days.data.filter((subscription) => {
-    if (subscription.status !== 'active') {
-      return false;
-    }
-
-    return subscription.items.data.some((item) => {
-      return item.price.recurring?.interval !== undefined;
-    });
-  });
-
-  const countFreeToPaidSubscriptionsLast30Days = freeToPaidSubscriptionsLast30Days.length;
-  const countAllSubscriptionsLast30Days = subscriptionsLast30Days.data.length;
-
-    // Last Month
-    const subscriptionsLastMonth = await stripe.subscriptions.list({
-      created: {
-        gte: today.clone().subtract(1, 'months').startOf('month').unix(),
-        lte: today.clone().startOf('month').unix(),
-      },
-    });
-  
-    const freeToPaidSubscriptionsLastMonth = subscriptionsLastMonth.data.filter((subscription) => {
-      if (subscription.status !== 'active') {
-        return false;
-      }
-  
-      return subscription.items.data.some((item) => {
-        return item.price.recurring?.interval !== undefined;
-      });
-    });
-  
-    const countFreeToPaidSubscriptionsLastMonth = freeToPaidSubscriptionsLastMonth.length;
-    const countAllSubscriptionsLastMonth = subscriptionsLastMonth.data.length;
+  const countFreeToPaidSubscriptionsLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix(), 'active')).length;
+  const countAllSubscriptionsLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix())).length;
 
   res.json({
     ok: true,
