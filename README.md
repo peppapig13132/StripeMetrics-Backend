@@ -138,3 +138,13 @@
     RewriteRule ^(.*)$ http://127.0.0.1:8000/$1 [P]
     ```
 - Use `pm2` module. More about `pm2`, click [here](https://pm2.keymetrics.io/).
+    ```
+    # Start process
+    pm2 start <ENTRY_JS_FILE>
+    
+    # Check process
+    pm2 list
+
+    # Stop process
+    pm2 delete <id>
+    ```
