@@ -20,6 +20,11 @@ export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, 
     order: [
       ['createdAt', 'DESC']
     ],
+    where: {
+      date: {
+        [Op.between]: [moment().subtract(30, 'days').toDate(), moment().toDate()]
+      },
+    },
     limit: 30
   });
 
@@ -47,6 +52,11 @@ export const getMrrMovementsData: RequestHandler = asyncHandler(async (req: Auth
     order: [
       ['createdAt', 'DESC']
     ],
+    where: {
+      date: {
+        [Op.between]: [moment().subtract(30, 'days').toDate(), moment().toDate()]
+      },
+    },
     limit: 30,
   });
 
@@ -62,6 +72,11 @@ export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRe
     order: [
       ['createdAt', 'DESC'],
     ],
+    where: {
+      date: {
+        [Op.between]: [moment().subtract(30, 'days').toDate(), moment().toDate()]
+      },
+    },
     limit: 30,
   });
 
@@ -108,7 +123,7 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
         [Op.between]: [startOfLastMonth.toDate(), endOfLastMonth.toDate()]
       },
     },
-    order: [['createdAt', 'DESC']],
+    order: [['date', 'DESC']],
   });
   const activeCustomerLastMonth = activeCustomerLastMonthData ? activeCustomerLastMonthData.dataValues.count : 0;
 
@@ -116,7 +131,7 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
     where: {
       rate_type: 'LAST_MONTH',
     },
-    order: [['createdAt', 'DESC']],
+    order: [['date', 'DESC']],
   });
   const churnRateLastMonth = churnRateData ? churnRateData.dataValues.rate : 0;
 
@@ -141,7 +156,7 @@ export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest
     where: {
       rate_type: 'LAST_30_DAYS',
     },
-    order: [['createdAt', 'DESC']],
+    order: [['date', 'DESC']],
   });
 
   const churnRateLast30Days = churnRateLast30DaysData ? churnRateLast30DaysData.dataValues.rate : 0;
@@ -150,7 +165,7 @@ export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest
     where: {
       rate_type: 'LAST_MONTH',
     },
-    order: [['createdAt', 'DESC']],
+    order: [['date', 'DESC']],
   });
 
   const churnRateLastMonth = churnRateLastMonthData ? churnRateLastMonthData.dataValues.rate : 0;
