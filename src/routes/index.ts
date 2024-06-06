@@ -1,7 +1,8 @@
 import { Application, Request, Response } from 'express';
-import authRouter from '../routes/auth.route';
-import stripeRouter from '../routes/stripe.route';
-import testRouter from '../routes/test.route';
+import authRouter from './auth.route';
+import stripeRouter from './stripe.route';
+import testRouter from './test.route';
+import stripeOldDataRouter from './stripe-old-data.route';
 import { authenticate } from '../middleware/auth.middleware';
 import path from 'path';
 
@@ -12,6 +13,7 @@ export default (app: Application) => {
 
   app.use('/api/auth', authRouter);
   app.use('/api/stripe', authenticate, stripeRouter);
+  app.use('/api/stripe-old-data', authenticate, stripeOldDataRouter)
   app.use('/api/test', testRouter);
   
   app.get('*', (req: Request, res: Response) => {

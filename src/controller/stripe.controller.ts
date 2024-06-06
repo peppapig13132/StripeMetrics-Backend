@@ -29,7 +29,7 @@ export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, 
     mrr_last_month: mrrLastMonth,
     mrr_data: last30DailySums,
   });
-})
+});
 
 export const countNewSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
   const countLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix())).length;

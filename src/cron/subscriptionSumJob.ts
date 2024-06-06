@@ -10,7 +10,7 @@ const cronExpression = process.env.SERVER_DAILY_CRON_EXPRESSION || '0 0 0 * * *'
 
 cron.schedule(cronExpression, async () => {
   try {
-    const activeSubscriptions = await fetchSubscriptions(moment().subtract(31, 'days').unix(), moment().unix(), 'active');
+    const activeSubscriptions = await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix(), 'active');
 
     const totalSum = activeSubscriptions.reduce((sum, subscription) => {
       return sum + ((subscription.items.data[0].plan.amount || 0) / 100);

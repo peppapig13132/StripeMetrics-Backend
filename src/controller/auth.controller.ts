@@ -72,4 +72,4 @@ export const login: RequestHandler = asyncHandler(async (req: Request, res: Resp
       msg: 'unauthorized user',
     });
   }
-})
+});
