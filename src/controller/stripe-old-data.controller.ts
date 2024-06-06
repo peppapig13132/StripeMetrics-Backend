@@ -164,7 +164,7 @@ const getOldDailySums: (time: moment.Moment) => Promise<boolean> = async (time) 
 }
 
 export const createStripeOldData: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const time: moment.Moment = moment().endOf('month');
+  const time: moment.Moment = moment(req.body.date).endOf('month');
 
   const [activeCustomerCounts, churnRates, dailyActiveSubscriptionCounts, dailySums,] = await Promise.all([
     getOldActiveCustomerCounts(time),
@@ -178,10 +178,11 @@ export const createStripeOldData: RequestHandler = asyncHandler(async (req: Auth
     churn_rates: churnRates,
     daily_active_subscription_counts: dailyActiveSubscriptionCounts,
     daily_sums: dailySums,
-    date: time,
+    date: time.clone().startOf('month').toDate(),
   });
 
   res.json({
+    ok: true,
     result: stripeOldDataRow,
   });
 });
