@@ -48,13 +48,16 @@ export const countNewSubscriptions: RequestHandler = asyncHandler(async (req: Au
 });
 
 export const getMrrMovementsData: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const last30DailySums = await DailySum.findAll({
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
+
+  const mrrArray = await DailySum.findAll({
     order: [
-      ['createdAt', 'DESC']
+      ['date', 'DESC']
     ],
     where: {
       date: {
-        [Op.between]: [moment().subtract(30, 'days').toDate(), moment().toDate()]
+        [Op.between]: [startDate.clone().toDate(), endDate.clone().toDate()]
       },
     },
     limit: 30,
@@ -62,7 +65,7 @@ export const getMrrMovementsData: RequestHandler = asyncHandler(async (req: Auth
 
   res.json({
     ok: true,
-    mrr_movements_data: last30DailySums,
+    mrr_array: mrrArray,
   });
 });
 
