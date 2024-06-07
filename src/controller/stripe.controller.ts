@@ -158,18 +158,16 @@ export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest
 });
 
 export const getFreeToPaidSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const countFreeToPaidSubscriptionsLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix(), 'active')).length;
-  const countAllSubscriptionsLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix())).length;
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
 
-  const countFreeToPaidSubscriptionsLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix(), 'active')).length;
-  const countAllSubscriptionsLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix())).length;
+  const countFreeToPaidSubscriptions = (await fetchSubscriptions(startDate.unix(), endDate.unix(), 'active')).length;
+  const countAllSubscriptions = (await fetchSubscriptions(startDate.unix(), endDate.unix())).length;
 
   res.json({
     ok: true,
-    count_free_to_paid_last_30_days: countFreeToPaidSubscriptionsLast30Days,
-    count_all_last_30_days: countAllSubscriptionsLast30Days,
-    count_free_to_paid_last_month: countFreeToPaidSubscriptionsLastMonth,
-    count_all_last_month: countAllSubscriptionsLastMonth,
+    count_free_to_paid: countFreeToPaidSubscriptions,
+    count_all: countAllSubscriptions,
   });
 });
 
