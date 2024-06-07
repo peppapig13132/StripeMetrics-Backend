@@ -94,10 +94,11 @@ export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRe
 });
 
 export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const startOfLastMonth = getFirstDateOfLastMonth();
-  const endOfLastMonth = getLastDateOfLastMonth();
+  // const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
+  const startDate: moment.Moment = endDate.clone().subtract(1, 'months');
 
-  const paidInvoices = await fetchPaidInvoices(startOfLastMonth.unix(), endOfLastMonth.unix());
+  const paidInvoices = await fetchPaidInvoices(startDate.unix(), endDate.unix());
 
   const totalRevenue = paidInvoices.reduce((total, invoice) => {
     return total + invoice.amount_paid;
@@ -105,8 +106,8 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
 
   const activeCustomerLastMonthData = await ActiveCustomerCount.findOne({
     where: {
-      createdAt: {
-        [Op.between]: [startOfLastMonth.toDate(), endOfLastMonth.toDate()]
+      date: {
+        [Op.between]: [startDate.toDate(), endDate.toDate()]
       },
     },
     order: [['date', 'DESC']],
@@ -115,17 +116,21 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
 
   const churnRateData = await ChurnRate.findOne({
     where: {
-      rate_type: 'LAST_MONTH',
+      // rate_type: 'LAST_MONTH',
+      date: {
+        [Op.between]: [startDate.toDate(), endDate.toDate()]
+      }
     },
     order: [['date', 'DESC']],
   });
-  const churnRateLastMonth = churnRateData ? churnRateData.dataValues.rate : 0;
+  
+  const churnRate = churnRateData ? churnRateData.dataValues.rate : 0;
 
   let customerLifetimeValue = 0;
 
-  if(activeCustomerLastMonth !== 0 && churnRateLastMonth !== 0) {
+  if(activeCustomerLastMonth !== 0 && churnRate !== 0) {
     const averageMonthlyRevenuePerUser = totalRevenue / activeCustomerLastMonth;
-    const customerLifetime = 1 / churnRateLastMonth;
+    const customerLifetime = 1 / churnRate;
     customerLifetimeValue = averageMonthlyRevenuePerUser * customerLifetime;
   } else {
     customerLifetimeValue = 0;
@@ -182,11 +187,9 @@ export const getFreeTrials: RequestHandler = asyncHandler(async (req: AuthReques
             subscription.trial_end < moment().unix();
   });
   const countFreeTrialsSubscriptions = freeTrialsSubscriptions.length;
-  // const countAllSubscriptions = subscriptions.length;
 
   res.json({
     ok: true,
     free_trials: countFreeTrialsSubscriptions,
-    // count_all_subscriptions: countAllSubscriptions,
   });
 });
