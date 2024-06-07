@@ -138,28 +138,22 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
 });
 
 export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const churnRateLast30DaysData = await ChurnRate.findOne({
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
+
+  const churnRate = await ChurnRate.findOne({
     where: {
       rate_type: 'LAST_30_DAYS',
+      date: {
+        [Op.between]: [startDate.clone().toDate(), endDate.clone().toDate()]
+      }
     },
     order: [['date', 'DESC']],
   });
-
-  const churnRateLast30Days = churnRateLast30DaysData ? churnRateLast30DaysData.dataValues.rate : 0;
-
-  const churnRateLastMonthData = await ChurnRate.findOne({
-    where: {
-      rate_type: 'LAST_MONTH',
-    },
-    order: [['date', 'DESC']],
-  });
-
-  const churnRateLastMonth = churnRateLastMonthData ? churnRateLastMonthData.dataValues.rate : 0;
 
   res.json({
     ok: true,
-    churn_rate_last_30_days: churnRateLast30Days,
-    churn_rate_last_month: churnRateLastMonth,
+    churn_rate: churnRate?.dataValues.rate,
   })
 });
 
