@@ -59,8 +59,7 @@ export const getMrrMovementsData: RequestHandler = asyncHandler(async (req: Auth
       date: {
         [Op.between]: [startDate.clone().toDate(), endDate.clone().toDate()]
       },
-    },
-    limit: 30,
+    }
   });
 
   res.json({
@@ -70,43 +69,27 @@ export const getMrrMovementsData: RequestHandler = asyncHandler(async (req: Auth
 });
 
 export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  // Last 30 days
-  const countLast30Days = await DailyActiveSubscriptionCount.findAll({
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
+  const days = endDate.diff(startDate, 'days');
+
+  const averageStayings = await DailyActiveSubscriptionCount.findAll({
     order: [
-      ['createdAt', 'DESC'],
+      ['date', 'DESC'],
     ],
     where: {
       date: {
-        [Op.between]: [moment().subtract(30, 'days').toDate(), moment().toDate()]
+        [Op.between]: [startDate.clone().toDate(), endDate.clone().toDate()]
       },
     },
-    limit: 30,
   });
 
-  const totalCountLast30Days = countLast30Days.reduce((acc: number, dailyActiveSubscriptionCount: DailyActiveSubscriptionCount) => acc + dailyActiveSubscriptionCount.dataValues.count, 0)
-  const averageStayingLast30Days = Math.round(totalCountLast30Days / 30);
-
-  // Last month
-  const startOfLastMonth = getFirstDateOfLastMonth().startOf('month');
-  const endOfLastMonth = getLastDateOfLastMonth().endOf('month');
-  const daysInLastMonth = startOfLastMonth.daysInMonth();
-
-  const countLastMonth = await DailyActiveSubscriptionCount.findAll({
-    where: {
-      createdAt: {
-        [Op.between]: [startOfLastMonth.toDate(), endOfLastMonth.toDate()]
-      }
-    }
-  });
-
-  const totalCountLastMonth = countLastMonth.reduce((acc: number, dailyActiveSubscriptionCount: DailyActiveSubscriptionCount) => acc + dailyActiveSubscriptionCount.dataValues.count, 0)
-  const averageStayingLastMonth = Math.round(totalCountLastMonth / daysInLastMonth);
+  const totalCount = averageStayings.reduce((acc: number, dailyActiveSubscriptionCount: DailyActiveSubscriptionCount) => acc + dailyActiveSubscriptionCount.dataValues.count, 0)
+  const averageStaying = Math.round(totalCount / days);
 
   res.json({
     ok: true,
-    average_staying_last_30_days: averageStayingLast30Days,
-    average_staying_last_month: averageStayingLastMonth,
-    totalCountLast30Days: totalCountLast30Days
+    average_staying: averageStaying,
   })
 });
 
