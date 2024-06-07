@@ -13,26 +13,26 @@ import ActiveCustomerCount from '../model/activeCustomerCount.model';
 dotenv.config();
 
 export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const mrrLast30Days = await calculateMrr(moment().subtract(30, 'days').unix(), moment().unix());
-  const mrrLastMonth = await calculateMrr(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix());
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
 
-  const last30DailySums = await DailySum.findAll({
+  const mrr = await calculateMrr(endDate.clone().subtract(1, 'months').unix(), endDate.clone().unix());
+
+  const mrrArray = await DailySum.findAll({
     order: [
-      ['createdAt', 'DESC']
+      ['date', 'DESC']
     ],
     where: {
       date: {
-        [Op.between]: [moment().subtract(30, 'days').toDate(), moment().toDate()]
+        [Op.between]: [startDate.clone().toDate(), endDate.clone().toDate()]
       },
     },
-    limit: 30
   });
 
   res.json({
     ok: true,
-    mrr_last_30days: mrrLast30Days,
-    mrr_last_month: mrrLastMonth,
-    mrr_data: last30DailySums,
+    mrr: mrr,
+    mrr_array: mrrArray,
   });
 });
 
