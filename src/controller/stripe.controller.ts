@@ -172,33 +172,21 @@ export const getFreeToPaidSubscriptions: RequestHandler = asyncHandler(async (re
 });
 
 export const getFreeTrials: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const today = moment();
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
 
-  // Last 30 days
-  const subscriptionsLast30Days = await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix());
-  const freeTrialsSubscriptionsLast30Days = subscriptionsLast30Days.filter((subscription) => {
+  const subscriptions = await fetchSubscriptions(startDate.unix(), endDate.unix());
+  const freeTrialsSubscriptions = subscriptions.filter((subscription) => {
     return  subscription.trial_end &&
             subscription.trial_end > moment().subtract(30, 'days').unix() &&
             subscription.trial_end < moment().unix();
   });
-  const countFreeTrialsSubscriptionsLast30Days = freeTrialsSubscriptionsLast30Days.length;
-  const countAllSubscriptionsLast30Days = subscriptionsLast30Days.length;
-
-  // Last month
-  const subscriptionsLastMonth = await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix());
-  const freeTrialsSubscriptionsLastMonth = subscriptionsLastMonth.filter((subscription) => {
-    return  subscription.trial_end &&
-            subscription.trial_end > getFirstDateOfLastMonth().unix() &&
-            subscription.trial_end < getLastDateOfLastMonth().unix();
-  });
-  const countFreeTrialsSubscriptionsLastMonth = freeTrialsSubscriptionsLastMonth.length;
-  const countAllSubscriptionsLastMonth = subscriptionsLastMonth.length;
+  const countFreeTrialsSubscriptions = freeTrialsSubscriptions.length;
+  // const countAllSubscriptions = subscriptions.length;
 
   res.json({
     ok: true,
-    count_free_trials_last_30_days: countFreeTrialsSubscriptionsLast30Days,
-    count_all_last_30_days: countAllSubscriptionsLast30Days,
-    count_free_trials_last_month: countFreeTrialsSubscriptionsLastMonth,
-    count_all_last_month: countAllSubscriptionsLastMonth,
+    free_trials: countFreeTrialsSubscriptions,
+    // count_all_subscriptions: countAllSubscriptions,
   });
 });
