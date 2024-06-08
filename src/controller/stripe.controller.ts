@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import moment from 'moment';
 import { Op } from 'sequelize';
 import { AuthRequest } from '../interfaces/interfaces';
-import { fetchPaidInvoices, calculateMrr, getLastDateOfLastMonth, getFirstDateOfLastMonth, fetchSubscriptions } from '../utils/utils';
+import { fetchPaidInvoices, calculateMrr, fetchSubscriptions } from '../utils/utils';
 import DailySum from '../model/dailySum.model';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
 import ChurnRate from '../model/churnRate.model';
@@ -37,13 +37,14 @@ export const getMrrData: RequestHandler = asyncHandler(async (req: AuthRequest, 
 });
 
 export const countNewSubscriptions: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  const countLast30Days = (await fetchSubscriptions(moment().subtract(30, 'days').unix(), moment().unix())).length;
-  const countLastMonth = (await fetchSubscriptions(getFirstDateOfLastMonth().unix(), getLastDateOfLastMonth().unix())).length;
+  const startDate: moment.Moment = moment(req.body.start_date);
+  const endDate: moment.Moment = moment(req.body.end_date);
+
+  const countSubscriptions = (await fetchSubscriptions(startDate.unix(), endDate.unix())).length;
 
   res.json({
     ok: true,
-    count_last_30days: countLast30Days,
-    count_last_month: countLastMonth,
+    count_subscriptions: countSubscriptions,
   });
 });
 
