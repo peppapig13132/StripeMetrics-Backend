@@ -152,7 +152,7 @@
 ## Logic Verification
 
 - [ ] MRR
-- [ ] Subscribers
+- [x] Subscribers
 - [ ] MRR Movements
 - [ ] Average Staying
 - [ ] Customer Lifetime Value
