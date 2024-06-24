@@ -73,3 +73,49 @@ export const login: RequestHandler = asyncHandler(async (req: Request, res: Resp
     });
   }
 });
+
+export const updatePassword: RequestHandler = asyncHandler(async (req: Request, res: Response) => {
+  const u = req.body;
+  
+  const user = await User.findOne({
+    where: {
+      email: u.email
+    }
+  });
+  
+  if(user) {
+    const isSame = await bcrypt.compare(u.old_password, user.dataValues.password);
+
+    if(isSame) {
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash(u.new_password, saltRounds);
+
+      const updatedUser = await User.update(
+        {password: passwordHash},
+        {
+          where: {
+            email: u.email,
+          }
+        }
+      );
+    
+      res.json({
+        ok: true,
+        msg: 'updated',
+        user: {
+          user_id: updatedUser
+        }
+      });
+    } else {
+      res.json({
+        ok: false,
+        msg: 'incorrect old password',
+      });
+    }
+  } else {
+    res.json({
+      ok: false,
+      msg: 'unauthorized user',
+    });
+  }
+});
