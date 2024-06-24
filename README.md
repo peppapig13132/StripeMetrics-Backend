@@ -148,3 +148,15 @@
     # Stop process
     pm2 delete <id>
     ```
+
+## Logic Verification
+
+- [ ] MRR
+- [ ] Subscribers
+- [ ] MRR Movements
+- [ ] Average Staying
+- [ ] Customer Lifetime Value
+- [ ] Customer Churn Rate
+- [ ] Free to paid subscriptions
+- [ ] Free trials
+- [ ] Annual Run Rate
