@@ -157,6 +157,6 @@
 - [ ] Average Staying
 - [ ] Customer Lifetime Value
 - [ ] Customer Churn Rate
-- [ ] Free to paid subscriptions
+- [x] Free to paid subscriptions
 - [ ] Free trials
 - [x] Annual Run Rate
