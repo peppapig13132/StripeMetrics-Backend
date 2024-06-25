@@ -1,5 +1,9 @@
 # STRIPE DASHBOARD (Backend)
 
+![Node.js](https://img.shields.io/badge/node.js-20.12.2-blue)
+![npm](https://img.shields.io/badge/npm-10.6.0-blue)
+![MySQL](https://img.shields.io/badge/mysql-8.4.0-blue)
+
 ## Features
 
 - [x] MRR
@@ -15,14 +19,9 @@
 
 ## Deployment
 
-### Prerequisites
+### Frontend
 
-- Node.js v20.12.2 (LTS)
-- npm v10.6.0
-- Git
-- PostgreSQL v16.2
-- [Frontend](https://github.com/peppapig13132/Stripe-Dashboard-Frontend)
-
+[Frontend Repository](https://github.com/peppapig13132/Stripe-Dashboard-Frontend)
 
 ### Steps
 
