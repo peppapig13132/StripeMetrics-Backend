@@ -2,7 +2,7 @@ import { RequestHandler, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import dotenv from 'dotenv';
 import moment from 'moment';
-import { Op } from 'sequelize';
+import { Op, fn, col } from 'sequelize';
 import { AuthRequest } from '../interfaces/interfaces';
 import { fetchPaidInvoices, calculateMrr, fetchSubscriptions } from '../utils/utils';
 import DailySum from '../model/dailySum.model';
@@ -94,9 +94,8 @@ export const getAverageStaying: RequestHandler = asyncHandler(async (req: AuthRe
 });
 
 export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
-  // const startDate: moment.Moment = moment(req.body.start_date);
+  const startDate: moment.Moment = moment(req.body.start_date);
   const endDate: moment.Moment = moment(req.body.end_date);
-  const startDate: moment.Moment = endDate.clone().subtract(1, 'months');
 
   const paidInvoices = await fetchPaidInvoices(startDate.unix(), endDate.unix());
 
@@ -104,15 +103,16 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
     return total + invoice.amount_paid;
   }, 0);
 
-  const activeCustomerLastMonthData = await ActiveCustomerCount.findOne({
+  const averageCustomerCountData = await ActiveCustomerCount.findOne({
+    attributes: [[fn('AVG', col('count')), 'averageCount']],
     where: {
       date: {
         [Op.between]: [startDate.toDate(), endDate.toDate()]
-      },
-    },
-    order: [['date', 'DESC']],
+      }
+    }
   });
-  const activeCustomerLastMonth = activeCustomerLastMonthData ? activeCustomerLastMonthData.dataValues.count : 0;
+
+  const averageCustomerCount = averageCustomerCountData ? averageCustomerCountData.get('averageCount') : 0;
 
   const activeCustomerCountAtStart = await ActiveCustomerCount.findOne({
     where: {
@@ -136,8 +136,8 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
 
   let customerLifetimeValue = 0;
 
-  if(activeCustomerLastMonth !== 0 && churnRate !== 0) {
-    const averageMonthlyRevenuePerUser = totalRevenue / activeCustomerLastMonth;
+  if(Number(averageCustomerCount) !== 0 && churnRate !== 0) {
+    const averageMonthlyRevenuePerUser = totalRevenue / Number(averageCustomerCount);
     const customerLifetime = 1 / churnRate;
     customerLifetimeValue = averageMonthlyRevenuePerUser * customerLifetime;
   } else {
