@@ -15,10 +15,6 @@ StripeOldData.init(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    churn_rates: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
     daily_active_subscription_counts: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
