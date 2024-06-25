@@ -5,12 +5,12 @@ dotenv.config();
 
 const dbHost = process.env.DB_HOST || 'localhost';
 const dbName = process.env.DB_NAME || 'stripe_dashboard';
-const dbAdmin = process.env.DB_ADMIN || 'postgres';
+const dbAdmin = process.env.DB_ADMIN || 'root';
 const dbPassword = process.env.DB_PASSWORD || '';
 
 const sequelize: Sequelize = new Sequelize(dbName, dbAdmin, dbPassword, {
     host: dbHost,
-    dialect: 'postgres'
+    dialect: 'mysql'
 });
 
 sequelize.authenticate().then(() => {
