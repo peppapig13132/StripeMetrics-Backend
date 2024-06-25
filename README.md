@@ -1,4 +1,4 @@
-# STRIPE DASHBOARD (Backend)
+# StripeMetrics (Backend)
 
 ![Node.js](https://img.shields.io/badge/node.js-20.12.2-blue)
 ![npm](https://img.shields.io/badge/npm-10.6.0-blue)
@@ -21,15 +21,15 @@
 
 ### Frontend
 
-[Frontend Repository](https://github.com/peppapig13132/Stripe-Dashboard-Frontend)
+[Frontend Repository](https://github.com/peppapig13132/StripeMetrics-Frontend)
 
 ### Steps
 
 1. Clone the repository from GitHub
 
     ```
-    git clone https://github.com/peppapig13132/Stripe-Dashboard-Backend.git
-    cd Stripe-Dashboard-Backend
+    git clone https://github.com/peppapig13132/StripeMetrics-Backend.git
+    cd StripeMetrics-Backend
     ```
 
 2. Install Dependencies
