@@ -156,7 +156,7 @@
 - [x] MRR Movements
 - [ ] Average Staying
 - [ ] Customer Lifetime Value
-- [ ] Customer Churn Rate
+- [x] Customer Churn Rate
 - [x] Free to paid subscriptions
 - [ ] Free trials
 - [x] Annual Run Rate
