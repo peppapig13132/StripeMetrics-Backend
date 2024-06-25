@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import moment from 'moment';
 import { AuthRequest } from '../interfaces/interfaces';
 import StripeOldData from '../model/stripeOldData.model';
-import { fetchSubscriptions } from '../utils/utils';
+import { calculateMrr, fetchSubscriptions } from '../utils/utils';
 import ActiveCustomerCount from '../model/activeCustomerCount.model';
 import ChurnRate from '../model/churnRate.model';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
@@ -138,16 +138,12 @@ const getOldDailySums: (time: moment.Moment) => Promise<boolean> = async (time) 
 
     for(let days = 0; days < monthDays; days ++) {
       try {
-        if(time.clone().subtract(days, 'days').startOf('date').unix() > moment().startOf('date').unix()) continue;
+        if(time.clone().subtract(30 + days - 1, 'days').startOf('date').unix() > moment().startOf('date').unix()) continue;
 
-        const activeSubscriptions = await fetchSubscriptions(time.clone().subtract(30 + days - 1, 'days').startOf('date').unix(), time.clone().startOf('date').unix(), 'active');
-
-        const totalSum = activeSubscriptions.reduce((sum, subscription) => {
-          return sum + ((subscription.items.data[0].plan.amount || 0) / 100);
-        }, 0);
+        const mrr = await calculateMrr(time.clone().subtract(30 + days - 1, 'days').startOf('date').unix(), time.clone().subtract(days - 1, 'days').startOf('date').unix())
 
         const dailySum = await DailySum.create({
-          sum: totalSum,
+          sum: mrr,
           date: time.clone().startOf('date').subtract(days - 1, 'days').toDate(),
         });
         
