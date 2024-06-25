@@ -7,7 +7,6 @@ import { AuthRequest } from '../interfaces/interfaces';
 import { fetchPaidInvoices, calculateMrr, fetchSubscriptions } from '../utils/utils';
 import DailySum from '../model/dailySum.model';
 import DailyActiveSubscriptionCount from '../model/dailyActiveSubscriptionCount.model';
-import ChurnRate from '../model/churnRate.model';
 import ActiveCustomerCount from '../model/activeCustomerCount.model';
 
 dotenv.config();
@@ -115,17 +114,25 @@ export const getCustomerLifetimeValue: RequestHandler = asyncHandler(async (req:
   });
   const activeCustomerLastMonth = activeCustomerLastMonthData ? activeCustomerLastMonthData.dataValues.count : 0;
 
-  const churnRateData = await ChurnRate.findOne({
+  const activeCustomerCountAtStart = await ActiveCustomerCount.findOne({
     where: {
-      // rate_type: 'LAST_MONTH',
       date: {
-        [Op.between]: [startDate.toDate(), endDate.toDate()]
+        [Op.eq]: startDate.toDate()
       }
-    },
-    order: [['date', 'DESC']],
+    }
+  });
+  const activeCustomerCountAtEnd = await ActiveCustomerCount.findOne({
+    where: {
+      date: {
+        [Op.eq]: endDate.toDate()
+      }
+    }
   });
   
-  const churnRate = churnRateData ? churnRateData.dataValues.rate : 0;
+  const countAtStart = activeCustomerCountAtStart ? activeCustomerCountAtStart.dataValues.count : 0;
+  const countAtEnd = activeCustomerCountAtEnd ? activeCustomerCountAtEnd.dataValues.count : 0;
+
+  const churnRate = (countAtStart !== 0) ? (Math.round((countAtStart - countAtEnd) / countAtStart * 100) / 100) : 0;
 
   let customerLifetimeValue = 0;
 
@@ -147,19 +154,29 @@ export const getChurnRate: RequestHandler = asyncHandler(async (req: AuthRequest
   const startDate: moment.Moment = moment(req.body.start_date);
   const endDate: moment.Moment = moment(req.body.end_date);
 
-  const churnRate = await ChurnRate.findOne({
+  const activeCustomerCountAtStart = await ActiveCustomerCount.findOne({
     where: {
-      rate_type: 'LAST_30_DAYS',
       date: {
-        [Op.between]: [startDate.clone().toDate(), endDate.clone().toDate()]
+        [Op.eq]: startDate.toDate()
       }
-    },
-    order: [['date', 'DESC']],
+    }
   });
+  const activeCustomerCountAtEnd = await ActiveCustomerCount.findOne({
+    where: {
+      date: {
+        [Op.eq]: endDate.toDate()
+      }
+    }
+  });
+
+  const countAtStart = activeCustomerCountAtStart ? activeCustomerCountAtStart.dataValues.count : 0;
+  const countAtEnd = activeCustomerCountAtEnd ? activeCustomerCountAtEnd.dataValues.count : 0;
+
+  const churnRate = (countAtStart !== 0) ? (Math.round((countAtStart - countAtEnd) / countAtStart * 100) / 100) : 0;
 
   res.json({
     ok: true,
-    churn_rate: churnRate?.dataValues.rate,
+    churn_rate: churnRate,
   })
 });
 
