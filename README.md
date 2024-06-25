@@ -151,9 +151,9 @@
 
 ## Logic Verification
 
-- [ ] MRR
+- [x] MRR
 - [x] Subscribers
-- [ ] MRR Movements
+- [x] MRR Movements
 - [ ] Average Staying
 - [ ] Customer Lifetime Value
 - [ ] Customer Churn Rate
