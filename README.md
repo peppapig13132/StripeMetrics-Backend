@@ -159,4 +159,4 @@
 - [ ] Customer Churn Rate
 - [ ] Free to paid subscriptions
 - [ ] Free trials
-- [ ] Annual Run Rate
+- [x] Annual Run Rate
