@@ -45,18 +45,19 @@ const getOldChurnRates: (time: moment.Moment) => Promise<boolean> = async (time)
       try {
         if(time.clone().subtract(days, 'days').startOf('date').unix() > moment().startOf('date').unix()) continue;
 
-        const activeSubscriptionsAtStartLast30Days = await fetchSubscriptions(time.clone().subtract(30 + days - 1, 'days').startOf('date').unix(), time.clone().subtract(days - 1, 'days').startOf('date').unix(), 'active');
-        const canceledSubscriptionsLast30Days = await fetchSubscriptions(time.clone().subtract(30 + days - 1, 'days').startOf('date').unix(), time.clone().subtract(days - 1, 'days').startOf('date').unix(), 'canceled');
+        // AtStart + 30 days = AtEnd
+        const activeSubscriptionsAtStart = await fetchSubscriptions(time.clone().subtract(30 + days - 1, 'days').startOf('date').unix(), time.clone().subtract(days - 1, 'days').startOf('date').unix(), 'active');
+        const activeSubscriptionsAtEnd = await fetchSubscriptions(time.clone().subtract(30 - 1, 'days').startOf('date').unix(), time.clone().subtract(-1, 'days').startOf('date').unix(), 'active');
     
-        const numberOfActiveSubscriptionsAtStartLast30Days = activeSubscriptionsAtStartLast30Days.length;
-        const numberOfCanceledSubscriptionsLast30Days = canceledSubscriptionsLast30Days.length;
+        const numberOfActiveSubscriptionsAtStart = activeSubscriptionsAtStart.length;
+        const numberOfactiveSubscriptionsAtEnd = activeSubscriptionsAtEnd.length;
     
         let churnRateLast30Days = 0;
     
-        if(numberOfActiveSubscriptionsAtStartLast30Days === 0) {
+        if(numberOfActiveSubscriptionsAtStart === 0) {
           churnRateLast30Days = 0
         } else {
-          churnRateLast30Days = Math.round(numberOfCanceledSubscriptionsLast30Days / numberOfActiveSubscriptionsAtStartLast30Days / 100) * 10000;
+          churnRateLast30Days = Math.round((numberOfActiveSubscriptionsAtStart - numberOfactiveSubscriptionsAtEnd) / numberOfActiveSubscriptionsAtStart * 10000) / 100;
         }
         const churnRate = await ChurnRate.create({
           rate: churnRateLast30Days,
@@ -73,18 +74,19 @@ const getOldChurnRates: (time: moment.Moment) => Promise<boolean> = async (time)
 
     try {
       if(time.clone().startOf('date').unix() < moment().unix()) {
-        const activeSubscriptionsAtStartLastMonth = await fetchSubscriptions(time.clone().subtract(1, 'month').startOf('month').startOf('date').unix(), time.clone().subtract(1, 'month').endOf('month').startOf('date').unix(), 'active');
-        const canceledSubscriptionsLastMonth = await fetchSubscriptions(time.clone().subtract(1, 'month').startOf('month').startOf('date').unix(), time.clone().subtract(1, 'month').endOf('month').startOf('date').unix(), 'canceled');
+        // For the Last month, 1 and 30/31
+        const activeSubscriptionsAtStart = await fetchSubscriptions(time.clone().subtract(1, 'month').startOf('month').startOf('date').unix(), time.clone().subtract(1, 'month').endOf('month').startOf('date').unix(), 'active');
+        const activeSubscriptionsAtEnd = await fetchSubscriptions(time.clone().subtract(1, 'month').startOf('month').startOf('date').unix(), time.clone().subtract(1, 'month').endOf('month').startOf('date').unix(), 'canceled');
     
-        const numberOfActiveSubscriptionsAtStartLastMonth = activeSubscriptionsAtStartLastMonth.length;
-        const numberOfCanceledSubscriptionsLastMonth = canceledSubscriptionsLastMonth.length;
+        const numberOfActiveSubscriptionsAtStart = activeSubscriptionsAtStart.length;
+        const numberOfactiveSubscriptionsAtEnd = activeSubscriptionsAtEnd.length;
     
         let churnRateLastMonth = 0;
     
-        if(numberOfActiveSubscriptionsAtStartLastMonth === 0) {
+        if(numberOfActiveSubscriptionsAtStart === 0) {
           churnRateLastMonth = 0
         } else {
-          churnRateLastMonth = Math.round(numberOfCanceledSubscriptionsLastMonth / numberOfActiveSubscriptionsAtStartLastMonth / 100) * 10000;
+          churnRateLastMonth = Math.round((numberOfActiveSubscriptionsAtStart - numberOfactiveSubscriptionsAtEnd) / numberOfActiveSubscriptionsAtStart * 10000) / 100;
         }
         const churnRate = await ChurnRate.create({
           rate: churnRateLastMonth,
